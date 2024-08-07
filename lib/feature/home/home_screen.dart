@@ -6,7 +6,7 @@ import 'package:http_dev_server/database/database.dart';
 import 'package:http_dev_server/domain/bloc/apis_bloc/apis_cubit.dart';
 import 'package:http_dev_server/domain/bloc/http_server_bloc/http_server_cubit.dart';
 import 'package:http_dev_server/feature/apis/apis_widget.dart';
-import 'package:http_dev_server/feature/server_info/server_info_widget.dart';
+import 'package:http_dev_server/feature/home/children/requests_widget/requests_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
           BlocListener<ApisCubit, ApisState>(
             listenWhen: (previous, current) => !current.isBuild,
             listener: (context, state) {
-              print(state);
+              print(state); // TODO
             },
           ),
           BlocListener<HttpServerCubit, HttpServerState>(
@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                   flex: 5,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    child: ServerInfoWidget(),
+                    child: RequestsWidget(),
                   ),
                 ),
               ],

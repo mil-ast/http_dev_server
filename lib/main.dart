@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http_dev_server/core/theme/theme.dart';
 import 'package:http_dev_server/feature/home/home_screen.dart';
 import 'package:logger/web.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   var logger = Logger();

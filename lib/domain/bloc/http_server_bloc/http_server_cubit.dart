@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http_dev_server/data/models/group_apis_model.dart';
 import 'package:http_dev_server/data/models/item_api_model.dart';
+import 'package:http_dev_server/domain/models/request_model.dart';
 
 part 'http_server_states.dart';
 
 class HttpServerCubit extends Cubit<HttpServerState> {
   HttpServerCubit() : super(HttpServerState.stop());
 
+  final List<RequestModel> _requestHistory = [];
   HttpServer? _server;
 
   @override
@@ -48,7 +50,9 @@ class HttpServerCubit extends Cubit<HttpServerState> {
         }
 
         if (api != null) {
-          emit(HttpServerRequestState.fromRequest(request, body));
+          final newRequest = RequestModel.fromRequest(request, body);
+          _requestHistory.insert(0, newRequest);
+          emit(HttpServerState.requestHistory(history: _requestHistory));
 
           request.response.statusCode = api.responseStatusCode;
 
@@ -60,19 +64,20 @@ class HttpServerCubit extends Cubit<HttpServerState> {
 
           request.response.write(api.body);
           request.response.close();
-
           return;
         }
 
         request.response.statusCode = 404;
         request.response.write('Not found');
         request.response.close();
-        emit(HttpServerRequestState.fromRequest(request, body));
-      });
 
-      emit(HttpServerState.message('Сервер остановлен'));
+        final newRequest = RequestModel.fromRequest(request, body);
+        _requestHistory.insert(0, newRequest);
+        emit(HttpServerState.requestHistory(history: _requestHistory));
+      });
     } catch (e, st) {
       onError(e, st);
+      stop();
     }
   }
 

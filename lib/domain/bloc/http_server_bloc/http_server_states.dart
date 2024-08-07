@@ -6,7 +6,8 @@ sealed class HttpServerState {
 
   factory HttpServerState.play() => const HttpServerInfoState(isPlay: true);
   factory HttpServerState.stop() => const HttpServerInfoState(isPlay: false);
-  factory HttpServerState.message(String mesage) = HttpServerInformState;
+  factory HttpServerState.message(String message) = HttpServerInformState;
+  factory HttpServerState.requestHistory({required List<RequestModel> history}) = HttpServerRequestHistoryState;
   factory HttpServerState.failure(Object err) => HttpServerErrorState(err.toString());
 }
 
@@ -27,49 +28,10 @@ class HttpServerInformState extends HttpServerState {
   const HttpServerInformState(this.message) : super(false);
 }
 
-class HttpServerRequestState extends HttpServerState {
-  final int statusCode;
-  final String method;
-  final String protocolVersion;
-  final bool persistentConnection;
-  final int contentLength;
-  final String content;
-  final Map<String, String> headers;
-  final Uri requestedUri;
-  final InternetAddress? remoteAddress;
-  final int? remotePort;
+class HttpServerRequestHistoryState extends HttpServerState {
+  final List<RequestModel> history;
 
-  const HttpServerRequestState({
-    required this.statusCode,
-    required this.method,
-    required this.protocolVersion,
-    required this.persistentConnection,
-    required this.contentLength,
-    required this.content,
-    required this.headers,
-    required this.requestedUri,
-    this.remoteAddress,
-    this.remotePort,
+  const HttpServerRequestHistoryState({
+    required this.history,
   }) : super(true);
-
-  factory HttpServerRequestState.fromRequest(HttpRequest request, String requestBody) {
-    final Map<String, String> headers = {};
-    request.headers.forEach(
-      (name, values) {
-        headers[name] = values.join('\r\n');
-      },
-    );
-    return HttpServerRequestState(
-      statusCode: request.response.statusCode,
-      method: request.method,
-      protocolVersion: request.protocolVersion,
-      persistentConnection: request.persistentConnection,
-      contentLength: request.contentLength,
-      content: requestBody,
-      headers: headers,
-      requestedUri: request.requestedUri,
-      remoteAddress: request.connectionInfo?.remoteAddress,
-      remotePort: request.connectionInfo?.remotePort,
-    );
-  }
 }

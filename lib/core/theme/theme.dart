@@ -50,21 +50,9 @@ final wbTheme = ThemeData(
     onPrimaryContainer: _primaryColor,
     tertiary: _tertiaryColor,
   ),
+  primarySwatch: Colors.green,
   appBarTheme: const AppBarTheme(
-    toolbarHeight: 64,
-    titleTextStyle: TextStyle(
-      fontWeight: FontWeight.w500,
-      fontSize: 20,
-      height: 1.4,
-      color: Colors.white,
-    ),
-    backgroundColor: _primaryColor,
-    toolbarTextStyle: TextStyle(color: Colors.white),
-    foregroundColor: Colors.white,
-    surfaceTintColor: Colors.white,
-    actionsIconTheme: IconThemeData(
-      color: Colors.white,
-    ),
+    iconTheme: IconThemeData(color: Colors.black),
   ),
   progressIndicatorTheme: const ProgressIndicatorThemeData(color: _primaryColor),
   unselectedWidgetColor: Colors.black45,
