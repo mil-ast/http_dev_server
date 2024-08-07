@@ -1,0 +1,8 @@
+dist
+build
+nginx
+*_old
+*.bk
+*.sql
+.vscode
+__debug_bin
