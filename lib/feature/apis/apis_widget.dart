@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http_dev_server/data/models/group_apis_model.dart';
 import 'package:http_dev_server/data/models/item_api_model.dart';
 import 'package:http_dev_server/domain/bloc/apis_bloc/apis_cubit.dart';
-import 'package:http_dev_server/feature/apis/widgets/api_create/api_create_dialog.dart';
-import 'package:http_dev_server/feature/apis/widgets/api_edit/api_edit_dialog.dart';
-import 'package:http_dev_server/feature/apis/widgets/group_create/group_create_dialog.dart';
-import 'package:http_dev_server/feature/apis/widgets/group_edit/group_edit_dialog.dart';
+import 'package:http_dev_server/feature/apis/children/api_create/api_create_dialog.dart';
+import 'package:http_dev_server/feature/apis/children/api_edit/api_edit_dialog.dart';
+import 'package:http_dev_server/feature/apis/children/group_create/group_create_dialog.dart';
+import 'package:http_dev_server/feature/apis/children/group_edit/group_edit_dialog.dart';
 
 class ApisWidget extends StatelessWidget {
   const ApisWidget({super.key});
@@ -114,6 +114,8 @@ class _ApisTreeWidgetState extends State<ApisTreeWidget> {
                     children: [
                       ...group.rows.map(
                         (api) => ListTile(
+                          dense: true,
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 4, 0),
                           title: Text(api.path, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
