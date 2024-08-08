@@ -81,7 +81,9 @@ class HomeScreen extends StatelessWidget {
             buildWhen: (previous, current) => current is HttpServerInfoState,
             builder: (context, state) {
               state as HttpServerInfoState;
-              final portController = TextEditingController.fromValue(const TextEditingValue(text: '8080'));
+              final portController = TextEditingController.fromValue(TextEditingValue(
+                text: state.port != null ? state.port.toString() : '8080',
+              ));
               return Row(
                 children: [
                   const Spacer(),

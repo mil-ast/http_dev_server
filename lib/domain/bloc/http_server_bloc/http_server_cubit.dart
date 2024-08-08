@@ -32,7 +32,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
 
       _server = await HttpServer.bind(InternetAddress.anyIPv4, port);
 
-      emit(HttpServerState.play());
+      emit(HttpServerState.play(port: port));
 
       await _server!.forEach((HttpRequest request) async {
         final body = await utf8.decodeStream(request);
@@ -73,7 +73,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
 
         final newRequest = RequestModel.fromRequest(request, body);
         _requestHistory.insert(0, newRequest);
-        emit(HttpServerState.requestHistory(history: _requestHistory));
+        emit(state.requestHistory(_requestHistory));
       });
     } catch (e, st) {
       onError(e, st);
