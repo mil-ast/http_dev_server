@@ -7,4 +7,5 @@ nginx
 .vscode
 .dart_tool
 .flutter-plugins
+.flutter-plugins-dependencies
 __debug_bin
