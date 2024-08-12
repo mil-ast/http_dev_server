@@ -36,10 +36,6 @@ class ApisCubit extends Cubit<ApisState> {
         workDir = appSupportDir.path;
       }
 
-      //Directory(workDir).exists();
-
-      print(workDir);
-
       _apis.clear();
       final data = await _repository.readFromFile();
 
