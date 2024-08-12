@@ -47,12 +47,6 @@ class HomeScreen extends StatelessWidget {
                     content: Text(state.message),
                   ),
                 );
-              } else if (state is HttpServerInformState) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                  ),
-                );
               }
             },
           ),
@@ -81,7 +75,8 @@ class HomeScreen extends StatelessWidget {
             buildWhen: (previous, current) => current is HttpServerInfoState,
             builder: (context, state) {
               state as HttpServerInfoState;
-              final portController = TextEditingController.fromValue(const TextEditingValue(text: '8080'));
+
+              final portController = TextEditingController(text: '${state.port}');
               return Row(
                 children: [
                   const Spacer(),
