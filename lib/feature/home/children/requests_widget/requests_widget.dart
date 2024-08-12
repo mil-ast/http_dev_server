@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http_dev_server/domain/bloc/http_server_bloc/http_server_cubit.dart';
+import 'package:http_dev_server/feature/dependencies_scope.dart';
 import 'package:http_dev_server/feature/home/children/requests_widget/request_item_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -9,6 +10,8 @@ class RequestsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final workDir = DependenciesScope.of(context).workDir;
+
     return BlocBuilder<HttpServerCubit, HttpServerState>(
       buildWhen: (previous, current) => current.isBuild,
       builder: (context, state) {
@@ -27,6 +30,12 @@ class RequestsWidget extends StatelessWidget {
                       }
                       return const SizedBox.shrink();
                     },
+                  ),
+                  Wrap(
+                    children: [
+                      const Text('Рабочий каталог: '),
+                      SelectableText(workDir),
+                    ],
                   ),
                   const Spacer(),
                 ],

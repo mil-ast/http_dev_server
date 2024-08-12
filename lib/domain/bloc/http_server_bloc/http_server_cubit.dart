@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http_dev_server/data/models/group_apis_model.dart';
 import 'package:http_dev_server/data/models/item_api_model.dart';
 import 'package:http_dev_server/domain/models/request_model.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'http_server_states.dart';
@@ -14,9 +13,12 @@ class HttpServerCubit extends Cubit<HttpServerState> {
   static const spKeyPort = 'server_port';
   static const defaultPort = 8080;
 
-  HttpServerCubit() : super(HttpServerState.ready(defaultPort)) {
-    _initialize();
-  }
+  final SharedPreferences _sp;
+
+  HttpServerCubit({
+    required SharedPreferences sp,
+  })  : _sp = sp,
+        super(HttpServerState.ready(sp.getInt(spKeyPort) ?? defaultPort));
 
   final List<RequestModel> _requestHistory = [];
   HttpServer? _server;
@@ -25,17 +27,6 @@ class HttpServerCubit extends Cubit<HttpServerState> {
   void onError(Object error, StackTrace stackTrace) {
     super.onError(error, stackTrace);
     emit(state.failure(error));
-  }
-
-  void _initialize() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedPort = prefs.getInt(spKeyPort);
-    if (savedPort != null) {
-      emit(state.stop(port: savedPort));
-    }
-
-    final Directory appDocumentsDir = await getApplicationSupportDirectory();
-    print(appDocumentsDir);
   }
 
   void start(List<GroupApisModel> apis, int? port) async {
@@ -47,8 +38,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
         throw Exception('Диапазон порта от 1 до ${0xffff}');
       }
 
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setInt(spKeyPort, port).ignore();
+      _sp.setInt(spKeyPort, port).ignore();
 
       _server?.close();
 
@@ -72,11 +62,11 @@ class HttpServerCubit extends Cubit<HttpServerState> {
         }
 
         if (api != null) {
+          request.response.statusCode = api.responseStatusCode;
+
           final newRequest = RequestModel.fromRequest(request, body);
           _requestHistory.insert(0, newRequest);
           emit(state.showRequestsHistory(history: _requestHistory));
-
-          request.response.statusCode = api.responseStatusCode;
 
           api.headers?.keys.forEach(
             (key) {
