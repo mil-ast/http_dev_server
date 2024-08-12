@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http_dev_server/data/models/group_apis_model.dart';
 import 'package:http_dev_server/data/models/item_api_model.dart';
 import 'package:http_dev_server/data/repository/apis_repository.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part './apis_states.dart';
 
 class ApisCubit extends Cubit<ApisState> {
+  static const spKeyWorkDir = 'work_dir';
   final IApisRepository _repository;
   final List<GroupApisModel> _apis = [];
 
@@ -24,6 +29,13 @@ class ApisCubit extends Cubit<ApisState> {
 
   Future<void> fetch() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      String? workDir = prefs.getString(spKeyWorkDir);
+      if (workDir == null) {
+        final Directory appSupportDir = await getApplicationSupportDirectory();
+        workDir = appSupportDir.path;
+      }
+
       _apis.clear();
       final data = await _repository.readFromFile();
 

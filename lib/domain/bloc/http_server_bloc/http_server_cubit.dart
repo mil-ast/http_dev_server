@@ -5,11 +5,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http_dev_server/data/models/group_apis_model.dart';
 import 'package:http_dev_server/data/models/item_api_model.dart';
 import 'package:http_dev_server/domain/models/request_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'http_server_states.dart';
 
 class HttpServerCubit extends Cubit<HttpServerState> {
-  HttpServerCubit() : super(HttpServerState.stop());
+  static const spKeyPort = 'server_port';
+  static const defaultPort = 8080;
+
+  final SharedPreferences _sp;
+
+  HttpServerCubit({
+    required SharedPreferences sp,
+  })  : _sp = sp,
+        super(HttpServerState.ready(sp.getInt(spKeyPort) ?? defaultPort));
 
   final List<RequestModel> _requestHistory = [];
   HttpServer? _server;
@@ -17,7 +26,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
   @override
   void onError(Object error, StackTrace stackTrace) {
     super.onError(error, stackTrace);
-    emit(HttpServerState.failure(error));
+    emit(state.failure(error));
   }
 
   void start(List<GroupApisModel> apis, int? port) async {
@@ -28,11 +37,14 @@ class HttpServerCubit extends Cubit<HttpServerState> {
       if (port < 1 || port > 0xFFFF) {
         throw Exception('Диапазон порта от 1 до ${0xffff}');
       }
+
+      _sp.setInt(spKeyPort, port).ignore();
+
       _server?.close();
 
       _server = await HttpServer.bind(InternetAddress.anyIPv4, port);
 
-      emit(HttpServerState.play());
+      emit(state.play(port: port));
 
       await _server!.forEach((HttpRequest request) async {
         final body = await utf8.decodeStream(request);
@@ -50,11 +62,11 @@ class HttpServerCubit extends Cubit<HttpServerState> {
         }
 
         if (api != null) {
+          request.response.statusCode = api.responseStatusCode;
+
           final newRequest = RequestModel.fromRequest(request, body);
           _requestHistory.insert(0, newRequest);
-          emit(HttpServerState.requestHistory(history: _requestHistory));
-
-          request.response.statusCode = api.responseStatusCode;
+          emit(state.showRequestsHistory(history: _requestHistory));
 
           api.headers?.keys.forEach(
             (key) {
@@ -73,7 +85,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
 
         final newRequest = RequestModel.fromRequest(request, body);
         _requestHistory.insert(0, newRequest);
-        emit(HttpServerState.requestHistory(history: _requestHistory));
+        emit(state.showRequestsHistory(history: _requestHistory));
       });
     } catch (e, st) {
       onError(e, st);
@@ -82,7 +94,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
   }
 
   void stop() async {
-    emit(HttpServerState.stop());
+    emit(state.stop());
     _server?.close();
   }
 }

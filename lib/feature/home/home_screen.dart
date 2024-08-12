@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http_dev_server/data/providers/apis_data_provider.dart';
-import 'package:http_dev_server/data/repository/apis_repository.dart';
-import 'package:http_dev_server/database/database.dart';
 import 'package:http_dev_server/domain/bloc/apis_bloc/apis_cubit.dart';
 import 'package:http_dev_server/domain/bloc/http_server_bloc/http_server_cubit.dart';
 import 'package:http_dev_server/feature/apis/apis_widget.dart';
+import 'package:http_dev_server/feature/dependencies_scope.dart';
 import 'package:http_dev_server/feature/home/children/requests_widget/requests_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,20 +11,20 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dependencies = DependenciesScope.of(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) {
-            final db = Database('http_dev_server.json');
-            final dataProvider = ApisDataProvider(db: db);
-            final repository = ApisRepository(dataProvider: dataProvider);
             return ApisCubit(
-              repository: repository,
+              repository: dependencies.apisRepository,
             )..fetch();
           },
         ),
         BlocProvider(
-          create: (context) => HttpServerCubit(),
+          create: (context) => HttpServerCubit(
+            sp: dependencies.sp,
+          ),
         ),
       ],
       child: MultiBlocListener(
@@ -44,12 +42,6 @@ class HomeScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: Theme.of(context).colorScheme.error,
-                    content: Text(state.message),
-                  ),
-                );
-              } else if (state is HttpServerInformState) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
                     content: Text(state.message),
                   ),
                 );
@@ -81,7 +73,8 @@ class HomeScreen extends StatelessWidget {
             buildWhen: (previous, current) => current is HttpServerInfoState,
             builder: (context, state) {
               state as HttpServerInfoState;
-              final portController = TextEditingController.fromValue(const TextEditingValue(text: '8080'));
+
+              final portController = TextEditingController(text: '${state.port}');
               return Row(
                 children: [
                   const Spacer(),
