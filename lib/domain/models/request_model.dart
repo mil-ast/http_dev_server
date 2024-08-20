@@ -7,6 +7,7 @@ class RequestModel {
   final bool persistentConnection;
   final int contentLength;
   final String content;
+  final String? responseBody;
   final Map<String, String> headers;
   final Uri requestedUri;
   final InternetAddress? remoteAddress;
@@ -20,6 +21,7 @@ class RequestModel {
     required this.persistentConnection,
     required this.contentLength,
     required this.content,
+    this.responseBody,
     required this.headers,
     required this.requestedUri,
     this.remoteAddress,
@@ -27,7 +29,7 @@ class RequestModel {
     required this.time,
   });
 
-  factory RequestModel.fromRequest(HttpRequest request, String requestBody) {
+  factory RequestModel.fromRequest(HttpRequest request, String requestBody, {String? responseBody}) {
     final Map<String, String> headers = {};
     request.headers.forEach(
       (name, values) {
@@ -41,6 +43,7 @@ class RequestModel {
       persistentConnection: request.persistentConnection,
       contentLength: request.contentLength,
       content: requestBody,
+      responseBody: responseBody,
       headers: headers,
       requestedUri: request.requestedUri,
       remoteAddress: request.connectionInfo?.remoteAddress,

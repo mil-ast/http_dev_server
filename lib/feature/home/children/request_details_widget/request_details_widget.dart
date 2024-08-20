@@ -157,6 +157,21 @@ class RequestDetailsWidget extends StatelessWidget {
                   ),
                 ],
               ),
+            if (req.responseBody != null && req.responseBody!.isNotEmpty)
+              TableRow(
+                children: [
+                  TableCellWidget(
+                      child: Text(
+                    'Тело ответа',
+                    style: titleTextStyle,
+                  )),
+                  TableCellWidget(
+                    child: SelectableText(
+                      req.responseBody!,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

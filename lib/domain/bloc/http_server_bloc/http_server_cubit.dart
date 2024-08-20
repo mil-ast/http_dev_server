@@ -64,7 +64,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
         if (api != null) {
           request.response.statusCode = api.responseStatusCode;
 
-          final newRequest = RequestModel.fromRequest(request, body);
+          final newRequest = RequestModel.fromRequest(request, body, responseBody: api.body);
           _requestHistory.insert(0, newRequest);
           emit(state.showRequestsHistory(history: _requestHistory));
 
@@ -83,7 +83,7 @@ class HttpServerCubit extends Cubit<HttpServerState> {
         request.response.write('Not found');
         request.response.close();
 
-        final newRequest = RequestModel.fromRequest(request, body);
+        final newRequest = RequestModel.fromRequest(request, body, responseBody: 'Not found');
         _requestHistory.insert(0, newRequest);
         emit(state.showRequestsHistory(history: _requestHistory));
       });
