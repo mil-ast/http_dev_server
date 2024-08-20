@@ -93,6 +93,15 @@ class HttpServerCubit extends Cubit<HttpServerState> {
     }
   }
 
+  void clearHistory() {
+    _requestHistory.clear();
+    emit(HttpServerInfoState(
+      isBuild: true,
+      isPlay: true,
+      port: state.port,
+    ));
+  }
+
   void stop() async {
     emit(state.stop());
     _server?.close();

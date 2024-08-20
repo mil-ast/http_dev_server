@@ -50,17 +50,29 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
         child: Scaffold(
+          appBar: AppBar(
+            title: const Text('HTTP Dev server'),
+            leading: Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                );
+              },
+            ),
+          ),
+          drawer: Drawer(
+            width: MediaQuery.sizeOf(context).width * 0.7,
+            child: const ApisWidget(),
+          ),
           body: const Padding(
             padding: EdgeInsets.all(20),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 2,
-                  child: ApisWidget(),
-                ),
-                Expanded(
-                  flex: 5,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: RequestsWidget(),
@@ -78,6 +90,15 @@ class HomeScreen extends StatelessWidget {
               return Row(
                 children: [
                   const Spacer(),
+                  if (state.isPlay)
+                    TextButton.icon(
+                      onPressed: () {
+                        context.read<HttpServerCubit>().clearHistory();
+                      },
+                      label: const Text('Очистить'),
+                      icon: const Icon(Icons.clear_all_outlined),
+                    ),
+                  const SizedBox(width: 20),
                   SizedBox(
                     width: 140,
                     child: TextField(
