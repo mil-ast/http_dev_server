@@ -78,31 +78,3 @@ class HttpServerRequestHistoryState extends HttpServerState {
     required super.port,
   }) : super(isBuild: true, isPlay: true);
 }
-
-/* class HttpServerInfoState extends HttpServerState {
-  final bool isPlay;
-  final int port;
-  const HttpServerInfoState({
-    required this.isPlay,
-    this.port = 8080,
-  }) : super(true);
-} 
-
-class HttpServerErrorState extends HttpServerState {
-  final String message;
-  const HttpServerErrorState(this.message) : super(false);
-}
-
-class HttpServerInformState extends HttpServerState {
-  final String message;
-  const HttpServerInformState(this.message) : super(false);
-}
-
-class HttpServerRequestHistoryState extends HttpServerState {
-  final List<RequestModel> history;
-
-  const HttpServerRequestHistoryState({
-    required this.history,
-  }) : super(true);
-}
-*/
