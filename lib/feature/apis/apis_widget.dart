@@ -87,8 +87,19 @@ class _ApisTreeWidgetState extends State<ApisTreeWidget> {
                                 leading: Icon(Icons.edit),
                                 title: Text('Изменить'),
                               ),
-                              onTap: () {
-                                _openGroupEditDialog(group);
+                              onTap: () async {
+                                final newName = await showDialog<String>(
+                                  context: context,
+                                  builder: (_) => Dialog(
+                                    child: GroupApiEditDialog(
+                                      groupName: group.name,
+                                    ),
+                                  ),
+                                );
+                                if (context.mounted) {
+                                  await context.read<ApisCubit>().updateGroup(group, newName);
+                                  setState(() {});
+                                }
                               },
                             ),
                             PopupMenuItem(
@@ -123,24 +134,30 @@ class _ApisTreeWidgetState extends State<ApisTreeWidget> {
                               _deleteApi(group, api);
                             },
                           ),
-                          leading: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: api.method.color,
-                              borderRadius: const BorderRadius.all(Radius.circular(4)),
-                            ),
-                            child: SizedBox(
-                              width: 40,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                child: Text(
-                                  api.method.name,
-                                  textAlign: TextAlign.center,
-                                ),
+                          leading: SizedBox(
+                            width: 50,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                              child: Text(
+                                api.method.name,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: api.method.color),
                               ),
                             ),
                           ),
-                          onTap: () {
-                            _openApiEditDialog(api);
+                          onTap: () async {
+                            final changedApi = await showDialog<ItemApiModel>(
+                              context: context,
+                              builder: (_) => Dialog(
+                                child: ApiEditDialog(
+                                  apiModel: api,
+                                ),
+                              ),
+                            );
+                            if (context.mounted) {
+                              await context.read<ApisCubit>().updateApi(api, changedApi);
+                              setState(() {});
+                            }
                           },
                         ),
                       ),
@@ -149,11 +166,20 @@ class _ApisTreeWidgetState extends State<ApisTreeWidget> {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 6, 0, 10),
                           child: TextButton.icon(
-                            onPressed: () {
-                              _openApiCreateDialog(group);
+                            onPressed: () async {
+                              final changedApi = await showDialog<ItemApiModel>(
+                                context: context,
+                                builder: (_) => const Dialog(
+                                  child: ApiCreateDialog(),
+                                ),
+                              );
+                              if (context.mounted) {
+                                await context.read<ApisCubit>().createApi(group, changedApi);
+                                setState(() {});
+                              }
                             },
                             label: const Text('Добавить API'),
-                            icon: const Icon(Icons.create_outlined),
+                            icon: const Icon(Icons.file_open_outlined),
                           ),
                         ),
                       ),
@@ -187,51 +213,8 @@ class _ApisTreeWidgetState extends State<ApisTreeWidget> {
     });
   }
 
-  void _openGroupEditDialog(GroupApisModel e) {
-    showDialog<String>(
-      context: context,
-      builder: (_) => Dialog(
-        child: GroupApiEditDialog(
-          groupName: e.name,
-        ),
-      ),
-    ).then((String? newName) {
-      return context.read<ApisCubit>().updateGroup(e, newName);
-    }).then((_) {
-      setState(() {});
-    });
-  }
-
   void _deleteGroup(GroupApisModel e) {
     context.read<ApisCubit>().deleteGroup(e).then((_) {
-      setState(() {});
-    });
-  }
-
-  void _openApiCreateDialog(GroupApisModel group) {
-    showDialog<ItemApiModel>(
-      context: context,
-      builder: (_) => const Dialog(
-        child: ApiCreateDialog(),
-      ),
-    ).then((ItemApiModel? changedApi) {
-      return context.read<ApisCubit>().createApi(group, changedApi);
-    }).then((_) {
-      setState(() {});
-    });
-  }
-
-  void _openApiEditDialog(ItemApiModel api) {
-    showDialog<ItemApiModel>(
-      context: context,
-      builder: (_) => Dialog(
-        child: ApiEditDialog(
-          apiModel: api,
-        ),
-      ),
-    ).then((ItemApiModel? changedApi) {
-      return context.read<ApisCubit>().updateApi(api, changedApi);
-    }).then((_) {
       setState(() {});
     });
   }

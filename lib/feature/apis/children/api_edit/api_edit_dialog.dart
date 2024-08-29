@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http_dev_server/core/theme/theme.dart';
 import 'package:http_dev_server/data/models/http_data.dart';
 import 'package:http_dev_server/data/models/item_api_model.dart';
 
@@ -70,8 +69,8 @@ class _ApiEditState extends State<ApiEditDialog> {
                     Expanded(
                       flex: 2,
                       child: DropdownButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        value: widget.apiModel.method,
+                        padding: const EdgeInsets.fromLTRB(10, 8, 10, 2),
+                        value: _method,
                         items: MethodType.values
                             .map(
                               (e) => DropdownMenuItem(
@@ -81,7 +80,9 @@ class _ApiEditState extends State<ApiEditDialog> {
                             )
                             .toList(),
                         onChanged: (value) {
-                          _method = value!;
+                          setState(() {
+                            _method = value!;
+                          });
                         },
                       ),
                     ),
@@ -148,84 +149,66 @@ class _ApiEditState extends State<ApiEditDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
                 if (widget.apiModel.headers != null) ...[
+                  const SizedBox(height: 20),
                   Text('Заголовки', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 20),
-                  ...List.generate(
-                      _headers.length,
-                      (i) => Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: TextFormField(
-                                  initialValue: _headers[i].key,
-                                  decoration: InputDecoration(
-                                    helperText: 'Ключ',
-                                    border: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Theme.of(context).colorScheme.dividerColor, width: 1.0),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Theme.of(context).colorScheme.dividerColor, width: 1.0),
-                                    ),
-                                  ),
-                                  validator: (String? value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Обязательное поле';
-                                    }
-                                    return null;
-                                  },
-                                  onChanged: (newKey) {
-                                    _headers[i] = (key: newKey, value: _headers[i].value);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                flex: 6,
-                                child: TextFormField(
-                                  initialValue: _headers[i].value,
-                                  autocorrect: true,
-                                  decoration: InputDecoration(
-                                    helperText: 'Значение',
-                                    border: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Theme.of(context).colorScheme.dividerColor, width: 1.0),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Theme.of(context).colorScheme.dividerColor, width: 1.0),
-                                    ),
-                                  ),
-                                  onChanged: (newValue) {
-                                    _headers[i] = (key: _headers[i].key, value: newValue);
-                                  },
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _headers.removeAt(i);
-                                  });
-                                },
-                                color: Theme.of(context).colorScheme.error,
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                ),
-                              ),
-                            ],
-                          )),
-                  const SizedBox(height: 20),
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _headers.add((key: '', value: ''));
-                      });
+                  Table(
+                    defaultColumnWidth: const IntrinsicColumnWidth(),
+                    columnWidths: const {
+                      0: FlexColumnWidth(2),
+                      1: FlexColumnWidth(6),
+                      2: FixedColumnWidth(40),
                     },
-                    icon: const Icon(Icons.add),
-                    label: const Text('Добавить заголовок'),
+                    children: List.generate(
+                      _headers.length,
+                      (i) => TableRow(
+                        children: [
+                          TableCell(
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Ключ',
+                              ),
+                              initialValue: _headers[i].key,
+                              validator: (String? value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Обязательное поле';
+                                }
+                                return null;
+                              },
+                              onChanged: (newKey) {
+                                _headers[i] = (key: newKey, value: _headers[i].value);
+                              },
+                            ),
+                          ),
+                          TableCell(
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Значение',
+                              ),
+                              initialValue: _headers[i].value,
+                              autocorrect: true,
+                              onChanged: (newValue) {
+                                _headers[i] = (key: _headers[i].key, value: newValue);
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _headers.removeAt(i);
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.delete_outline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
                 const SizedBox(height: 20),
