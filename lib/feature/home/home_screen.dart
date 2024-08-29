@@ -109,14 +109,15 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 20),
-                  if (state.isPlay)
-                    TextButton.icon(
-                      onPressed: () {
-                        context.read<HttpServerCubit>().clearHistory();
-                      },
-                      label: const Text('Очистить'),
-                      icon: const Icon(Icons.clear_all_outlined),
-                    ),
+                  TextButton.icon(
+                    onPressed: state.isPlay
+                        ? () {
+                            context.read<HttpServerCubit>().clearHistory();
+                          }
+                        : null,
+                    label: const Text('Очистить'),
+                    icon: const Icon(Icons.clear_all_outlined),
+                  ),
                   const SizedBox(width: 20),
                   SizedBox(
                     width: 140,
