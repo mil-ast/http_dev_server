@@ -212,6 +212,16 @@ class _ApiEditState extends State<ApiEditDialog> {
                   ),
                 ],
                 const SizedBox(height: 20),
+                TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _headers.add((key: '', value: ''));
+                    });
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Добавить заголовок'),
+                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
