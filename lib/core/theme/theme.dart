@@ -36,8 +36,12 @@ final wbTheme = ThemeData(
   secondaryHeaderColor: _primaryColor,
   scaffoldBackgroundColor: _backgroundPrimary,
   inputDecorationTheme: const InputDecorationTheme(
-    border: OutlineInputBorder(borderSide: BorderSide(color: _dividerColor, width: 1.0)),
-    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: _dividerColor, width: 1.0)),
+    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: _quaternaryColor)),
+    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: _dividerColor)),
+    focusedErrorBorder: UnderlineInputBorder(borderSide: BorderSide(width: 1, color: _dividerColor)),
+    border: UnderlineInputBorder(borderSide: BorderSide(width: 1, color: _dividerColor)),
+    disabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 1, color: _dividerColor)),
+    errorBorder: UnderlineInputBorder(borderSide: BorderSide(width: 1, color: _dividerColor)),
   ),
   colorScheme: const ColorScheme.light(
     error: _errorRed,

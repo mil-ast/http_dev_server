@@ -19,7 +19,7 @@ class _ApiEditState extends State<ApiCreateDialog> {
   final TextEditingController _bodyController = TextEditingController(text: '{"status": "ok"}');
   MethodType _method = MethodType.get;
   final List<({String key, String value})> _headers = [
-    (key: 'Content-Type', value: 'application/json'),
+    (key: 'Content-Type', value: 'application/json; charset=utf-8'),
     (key: 'Server', value: 'HttpDevServer'),
   ];
 
@@ -64,7 +64,9 @@ class _ApiEditState extends State<ApiCreateDialog> {
                             )
                             .toList(),
                         onChanged: (value) {
-                          _method = value!;
+                          setState(() {
+                            _method = value!;
+                          });
                         },
                       ),
                     ),

@@ -40,6 +40,9 @@ class ApisCubit extends Cubit<ApisState> {
       final data = await _repository.readFromFile();
 
       _apis.addAll(data);
+      if (_apis.length == 1) {
+        _apis.first.isExpanded = true;
+      }
 
       emit(ApisState.success(data));
     } catch (e, st) {

@@ -32,7 +32,14 @@ class HomeScreen extends StatelessWidget {
           BlocListener<ApisCubit, ApisState>(
             listenWhen: (previous, current) => !current.isBuild,
             listener: (context, state) {
-              print(state); // TODO
+              if (state is ApisErrorState) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    content: Text(state.message),
+                  ),
+                );
+              }
             },
           ),
           BlocListener<HttpServerCubit, HttpServerState>(
@@ -52,20 +59,6 @@ class HomeScreen extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             title: const Text('HTTP Dev server'),
-            leading: Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                );
-              },
-            ),
-          ),
-          drawer: Drawer(
-            width: MediaQuery.sizeOf(context).width * 0.7,
-            child: const ApisWidget(),
           ),
           body: const Padding(
             padding: EdgeInsets.all(20),
@@ -90,6 +83,32 @@ class HomeScreen extends StatelessWidget {
               return Row(
                 children: [
                   const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 40),
+                    child: TextButton.icon(
+                      label: const Text('Настроить API'),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (_) => DraggableScrollableSheet(
+                            initialChildSize: 1,
+                            minChildSize: .5,
+                            maxChildSize: 1,
+                            expand: true,
+                            builder: (_, scrollController) => BlocProvider.value(
+                              value: context.read<ApisCubit>(),
+                              child: const ApisWidget(),
+                            ),
+                          ),
+                          showDragHandle: true,
+                          enableDrag: true,
+                          scrollControlDisabledMaxHeightRatio: 0.9,
+                        );
+                      },
+                      icon: const Icon(Icons.menu),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
                   if (state.isPlay)
                     TextButton.icon(
                       onPressed: () {
